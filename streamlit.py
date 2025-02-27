@@ -19,27 +19,89 @@ df = load_data()
 
 # Data Preprocessing and Feature Engineering
 def preprocess_data(df):
+    # Ensure 'customerID' is dropped if it exists
     if 'customerID' in df.columns:
         df.drop(columns=['customerID'], inplace=True)
     
+    # Convert 'TotalCharges' to numeric, handling errors
     df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
+    
+    # Convert 'tenure' to integer
     df['tenure'] = df['tenure'].astype(int)
+    
+    # Define categorical columns
     categorical_columns = ['gender', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines',
                            'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection',
                            'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract',
                            'PaperlessBilling', 'PaymentMethod', 'Churn']
+    
+    # Convert categorical columns to 'category' dtype
     df[categorical_columns] = df[categorical_columns].astype('category')
+    
+    # Fill missing 'TotalCharges' with median
     total_charges_median = df['TotalCharges'].median()
     df['TotalCharges'] = df['TotalCharges'].fillna(total_charges_median)
+    
+    # Fill missing values in categorical columns with mode
     for col in categorical_columns:
         if df[col].isnull().any():
             mode_value = df[col].mode()[0]
             df[col] = df[col].fillna(mode_value)
+    
+    # Create a new feature for phone service and multiple lines
     df['PhoneService_MultipleLines'] = df.apply(
         lambda row: 'No Phone Service' if row['PhoneService'] == 'No' else row['MultipleLines'], axis=1
     )
+    
+    # Calculate total services
     services = ['OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies']
     df['TotalServices'] = df[services].apply(lambda row: (row == 'Yes').sum(), axis=1)
+
+    # Create tenure category
+    def tenure_category(tenure):
+        if tenure <= 12:
+            return '0-12 months'
+        elif tenure <= 24:
+            return '12-24 months'
+        elif tenure <= 36:
+            return '24-36 months'
+        elif tenure <= 48:
+            return '36-48 months'
+        elif tenure <= 60:
+            return '48-60 months'
+        else:
+            return '60+ months'
+
+    df['TenureCategory'] = df['tenure'].apply(tenure_category)
+    
+    # Calculate average monthly spend
+    df['AverageMonthlySpend'] = df.apply(
+        lambda row: row['TotalCharges'] / row['tenure'] if row['tenure'] > 0 else 0, axis=1
+    )
+    
+    # Drop unnecessary columns
+    df.drop(columns=['PhoneService', 'MultipleLines'] + services, inplace=True)
+    
+    # Map 'Yes'/'No' to 1/0 for binary columns
+    yes_no_columns = ['Partner', 'Dependents', 'PaperlessBilling', 'Churn']
+    for col in yes_no_columns:
+        df[col] = df[col].map({'Yes': 1, 'No': 0})
+        mode_value = df[col].mode()[0]
+        df[col] = df[col].fillna(mode_value).astype(int)
+    
+    # Fill missing values in numerical columns with median
+    numerical_columns = ['MonthlyCharges', 'TotalCharges', 'AverageMonthlySpend']
+    for col in numerical_columns:
+        median_value = df[col].median()
+        df[col] = df[col].fillna(median_value)
+    
+    # Convert 'PhoneService_MultipleLines' to binary
+    df['PhoneService_MultipleLines'] = df['PhoneService_MultipleLines'].apply(
+        lambda x: 1 if x != 'No Phone Service' else 0
+    ).astype(int)
+    
+    return df
+
 
     def tenure_category(tenure):
         if tenure <= 12:
