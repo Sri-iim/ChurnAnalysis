@@ -159,4 +159,4 @@ st.subheader("Logistic Regression Evaluation")
 log_reg_model = evaluate_model(log_reg, X_train, X_test, y_train, y_test, "Logistic Regression")
 
 st.subheader("Random Forest Evaluation")
-rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random
+rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest" ) 
