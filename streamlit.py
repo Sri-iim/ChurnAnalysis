@@ -88,7 +88,7 @@ gender_filter = st.sidebar.selectbox("Select Gender", options=['All'] + df['gend
 if gender_filter != 'All':
     df = df[df['gender'] == gender_filter]
 
-partner_filter = st.sidebar.selectbox("Select Partner Status", options=['All'] + df[' Partner'].unique().tolist())
+partner_filter = st.sidebar.selectbox("Select Partner Status", options=['All'] + df['Partner'].unique().tolist())
 if partner_filter != 'All':
     df = df[df['Partner'] == partner_filter]
 
