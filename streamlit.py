@@ -170,7 +170,7 @@ st.write(conf_matrix)
 class_report = classification_report(y_test, y_pred)
 st.text("Classification Report:")
 st.text(class_report)
-``` ```python
+
 # Create a column transformer for preprocessing
 column_transformer = ColumnTransformer(
     transformers=[
