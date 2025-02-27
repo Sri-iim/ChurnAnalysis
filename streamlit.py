@@ -10,7 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 
 # Load Data
 def load_data():
-    df = pd.read_csv("customer_churn.csv")
+    df = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
     df.dropna(inplace=True)
     return df
 
