@@ -14,16 +14,6 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import shap
 import io
 
-# Set page configuration
-st.set_page_config(page_title="Telco Customer Churn Analysis", layout="wide", page_icon="📊")
-
-# Application title and introduction
-st.title("Telco Customer Churn Analysis Dashboard")
-st.markdown("""
-This application provides interactive analysis of the Telco Customer Churn dataset. 
-Explore customer demographics, service usage patterns, and predict churn probability.
-""")
-
 # Function to load data
 @st.cache_data
 def load_data():
