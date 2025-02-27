@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score, classification_report
 
 # Load dataset
 def load_data():
-    url = "https://raw.githubusercontent.com/plotly/datasets/master/WA_Fn-UseC_-Telco-Customer-Churn.csv"
+    url = "WA_Fn-UseC_-Telco-Customer-Churn.csv"
     df = pd.read_csv(url)
     df.drop(columns=['customerID'], inplace=True)
     df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
