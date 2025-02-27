@@ -161,7 +161,7 @@ if df is not None:
             features = customer_data.drop(columns=['Churn'])
             features_processed = preprocessor.transform(features)
             churn_probability = model.predict_proba(features_processed)[:, 1]
-            st.write(f"Churn Probability: {churn_probability[0] * 100:.2f}%") ```python
+            st.write(f"Churn Probability: {churn_probability[0] * 100:.2f}%") 
         else:
             st.write("No data available for the selected customer.")
 
