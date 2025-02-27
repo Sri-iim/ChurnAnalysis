@@ -11,7 +11,7 @@ from sklearn.metrics import (
 )
 
 # Load dataset (Replace with your dataset path)
-df = pd.read_csv("your_dataset.csv")
+df = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
 
 # Ensure dataset is cleaned and processed correctly
 df.dropna(inplace=True)
