@@ -13,6 +13,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 def load_data():
     url = "WA_Fn-UseC_-Telco-Customer-Churn.csv"  # Replace with your actual path or URL
     df = pd.read_csv(url)
+    df.columns = df.columns.str.strip()
     return df
 
 df = load_data()
