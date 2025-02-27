@@ -228,4 +228,4 @@ st.sidebar.header("Additional Filters")
 # Add more filter options for users to explore the dataset further
 
 # Finalize the Streamlit app
-st.write("Explore the data, visualize trends, and predict churn risk effectively!") ```python
+st.write("Explore the data, visualize trends, and predict churn risk effectively!") 
