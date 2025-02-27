@@ -30,7 +30,7 @@ def load_data():
         # Convert SeniorCitizen from 0/1 to No/Yes
          df['SeniorCitizen'] = df['SeniorCitizen'].map({0: 'No', 1: 'Yes'})
         
-        return df
+         return df
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return None
