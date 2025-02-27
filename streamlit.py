@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, classification_report
 
 # Load dataset
@@ -44,8 +43,7 @@ X_test = scaler.transform(X_test)
 
 # Model Selection
 model_options = {"Logistic Regression": LogisticRegression(),
-                 "Random Forest": RandomForestClassifier(),
-                 "XGBoost": XGBClassifier()}
+                 "Random Forest": RandomForestClassifier()}
 selected_model = st.selectbox("Select a Model", list(model_options.keys()))
 
 if st.button("Train Model"):
