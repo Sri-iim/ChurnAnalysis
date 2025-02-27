@@ -13,13 +13,9 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 def load_data():
     url = "WA_Fn-UseC_-Telco-Customer-Churn.csv"  # Replace with your actual path or URL
     df = pd.read_csv(url)
-    print(df.head())  # Display first few rows
-    print(df.columns)  # Show all column names
     return df
 
 df = load_data()
-
-
 
 # Data Preprocessing
 def preprocess_data(df):
