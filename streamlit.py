@@ -144,7 +144,9 @@ def user_input_features():
     tenure = st.sidebar.slider("Tenure (months)", 0, 72, 12)
     monthly_charges = st.sidebar.number_input("Monthly Charges", min_value=0.0, max_value=100.0, value=30.0)
     total_charges = st.sidebar.number_input("Total Charges", min_value=0.0, value=100.0)
-    return pd.DataFrame({
+
+    # Default input DataFrame
+    input_data = pd.DataFrame({
         'gender': [gender],
         'Partner': [partner],
         'Dependents': [dependents],
@@ -152,6 +154,22 @@ def user_input_features():
         'MonthlyCharges': [monthly_charges],
         'TotalCharges': [total_charges]
     })
+
+    # Add missing categorical columns with default values
+    expected_columns = ['PhoneService', 'MultipleLines', 'InternetService', 'OnlineSecurity',
+                        'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV',
+                        'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod', 'Churn']
+
+    for col in expected_columns:
+        if col not in input_data.columns:
+            input_data[col] = 'No'  # Default assumption
+
+    # Additional features
+    input_data['PhoneService_MultipleLines'] = 1  # Assuming user has phone service
+    input_data['TotalServices'] = 0  # Placeholder for total services
+    input_data['AverageMonthlySpend'] = input_data['TotalCharges'] / input_data['tenure'].replace(0, 1)
+
+    return input_data
 
 input_data = user_input_features()
 input_data['PhoneService_MultipleLines'] = 1  # Assuming user has phone service
