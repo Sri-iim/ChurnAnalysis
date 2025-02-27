@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,7 +18,7 @@ def load_data():
 
 df = load_data()
 
-# Data Preprocessing and Feature Engineering
+# Data Preprocessing
 def preprocess_data(df):
     df.drop(columns=['customerID'], inplace=True)
     df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
@@ -82,6 +83,16 @@ st.subheader("Data Exploration")
 if st.checkbox("Show Raw Data"):
     st.write(df)
 
+# Interactive Filters
+st.sidebar.header("Filter Options")
+gender_filter = st.sidebar.selectbox("Select Gender", options=['All'] + df['gender '].unique().tolist())
+if gender_filter != 'All':
+    df = df[df['gender'] == gender_filter]
+
+partner_filter = st.sidebar.selectbox("Select Partner Status", options=['All'] + df['Partner'].unique().tolist())
+if partner_filter != 'All':
+    df = df[df['Partner'] == partner_filter]
+
 # Visualizations
 st.subheader("Visualizations")
 
@@ -119,6 +130,42 @@ correlation_matrix = df_encoded.corr()
 sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', ax=ax4)
 st.pyplot(fig4)
 
+# Real-Time Churn Prediction Model
+st.subheader("Churn Prediction")
+
+# User Input for Prediction
+st.sidebar.header("Customer Input")
+def user_input_features():
+    gender = st.sidebar.selectbox("Gender", options=['Male', 'Female'])
+    partner = st.sidebar.selectbox("Partner", options=['Yes', 'No'])
+    dependents = st.sidebar.selectbox("Dependents", options=['Yes', 'No'])
+    tenure = st.sidebar.slider("Tenure (months)", 0, 72, 12)
+    monthly_charges = st.sidebar.number_input("Monthly Charges", min_value=0.0, max_value=100.0, value=30.0)
+    total_charges = st.sidebar.number_input("Total Charges", min_value=0.0, value=100.0)
+    return pd.DataFrame({
+        'gender': [gender],
+        'Partner': [partner],
+        'Dependents': [dependents],
+        'tenure': [tenure],
+        'MonthlyCharges': [monthly_charges],
+        'TotalCharges': [total_charges]
+    })
+
+input_data = user_input_features()
+input_data['PhoneService_MultipleLines'] = 1  # Assuming user has phone service
+input_data['TotalServices'] = 0  # Placeholder for total services
+input_data['AverageMonthlySpend'] = input_data['TotalCharges'] / input_data['tenure'].replace(0, 1)
+
+# Preprocess input data
+input_data = preprocess_data(input_data)
+
+# Model Prediction
+if st.button("Predict Churn"):
+    prediction_log_reg = log_reg.predict(input_data)
+    prediction_rf = rf.predict(input_data)
+    st.write(f"Logistic Regression Prediction: {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
+    st.write(f"Random Forest Prediction: {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
+
 # Model Training and Evaluation
 st.subheader("Model Training and Evaluation")
 
@@ -132,7 +179,7 @@ X_train[numerical_columns] = scaler.fit_transform(X_train[numerical_columns])
 X_test[numerical_columns] = scaler.transform(X_test[numerical_columns])
 
 def evaluate_model(model, X_train, X_test, y_train, y_test, model_name):
-    model.fit(X_train, y_train)
+    model.fit (X_train, y_train)
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
@@ -158,4 +205,27 @@ st.subheader("Logistic Regression Evaluation")
 log_reg_model = evaluate_model(log_reg, X_train, X_test, y_train, y_test, "Logistic Regression")
 
 st.subheader("Random Forest Evaluation")
-rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest" ) 
+rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest") 
+
+# Additional Features for Customer Profile Analysis
+st.subheader("Customer Profile Analysis")
+st.write("Analyze customer profiles based on selected filters and visualizations.")
+# Add more interactive visualizations or insights based on customer profiles here
+
+# Service Usage Trends
+st.subheader("Service Usage Trends")
+# Implement visualizations to show trends in service usage over time or by customer demographics
+
+# Churn Risk Assessment
+st.subheader("Churn Risk Assessment")
+# Provide insights or visualizations that help assess the risk of churn based on various factors
+
+# Interactive Data Filtering and Exploration
+st.subheader("Interactive Data Filtering")
+# Allow users to filter data based on various criteria and visualize the results dynamically
+
+st.sidebar.header("Additional Filters")
+# Add more filter options for users to explore the dataset further
+
+# Finalize the Streamlit app
+st.write("Explore the data, visualize trends, and predict churn risk effectively!") ```python
