@@ -29,14 +29,8 @@ Explore customer demographics, service usage patterns, and predict churn probabi
 def load_data():
     try:
         # In a real app, you would use:
-        # df = pd.read_csv('telco_customer_churn.csv')
-        # For this example, we'll use a text input showing the first few rows
-        data = st.session_state.get('data_input', '')
-        if not data:
-            return None
-            
-        buffer = io.StringIO(data)
-        df = pd.read_csv(buffer, delimiter='\t')
+         df = pd.read_csv('WA_Fn-UseC_-Telco-Customer-Churn.csv')
+        # For this example, we'll use a text input showing the first few row
         
         # Data preprocessing
         # Convert TotalCharges to numeric
