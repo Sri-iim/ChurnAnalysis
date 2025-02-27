@@ -18,8 +18,12 @@ def load_data():
 df = load_data()
 
 # Data Preprocessing and Feature Engineering
+# Print columns for debugging
+st.write("Initial DataFrame columns:", df.columns.tolist())
+
+# Data Preprocessing and Feature Engineering
 def preprocess_data(df):
-    # Drop 'customerID' as it's not needed for analysis
+    # Ensure 'customerID' is dropped if it exists
     if 'customerID' in df.columns:
         df.drop(columns=['customerID'], inplace=True)
     
@@ -34,6 +38,12 @@ def preprocess_data(df):
                            'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection',
                            'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract',
                            'PaperlessBilling', 'PaymentMethod', 'Churn']
+    
+    # Check if all categorical columns exist
+    missing_cols = [col for col in categorical_columns if col not in df.columns]
+    if missing_cols:
+        st.error(f"Missing columns: {missing_cols}")
+        return df  # Return the DataFrame as is if columns are missing
     
     # Convert categorical columns to 'category' dtype
     df[categorical_columns] = df[categorical_columns].astype('category')
@@ -80,7 +90,7 @@ def preprocess_data(df):
     )
     
     # Drop unnecessary columns
-    df.drop(columns=['PhoneService', 'MultipleLines'] + services, inplace=True)
+    df.drop(columns=['PhoneService', 'MultipleLines'] + services, inplace=True, errors='ignore')
     
     # Map 'Yes'/'No' to 1/0 for binary columns
     yes_no_columns = ['Partner', 'Dependents', 'PaperlessBilling', 'Churn']
