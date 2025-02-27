@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, classification_report
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
+
 
 # Load the dataset
 url = "/kaggle/input/telco-customer-churn/WA_Fn-UseC_-Telco-Customer-Churn.csv"
@@ -176,7 +176,6 @@ X_test[numerical_columns] = scaler.transform(X_test[numerical_columns])
 
 log_reg = LogisticRegression(random_state=42)
 rf = RandomForestClassifier(random_state=42)
-xgb = XGBClassifier(random_state=42)
 
 # Evaluate Logistic Regression
 log_reg_model = log_reg.fit(X_train, y_train)
