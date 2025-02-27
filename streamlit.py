@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, classification_report
 
@@ -32,9 +34,10 @@ def preprocess_data(df):
     df['tenure'] = df['tenure'].astype(int)
     
     # Define categorical columns
-    categorical_columns = ['gender','Partner','Dependents','PhoneService','MultipleLines',
-                           'InternetService','OnlineSecurity','OnlineBackup','DeviceProtection',
-                           'TechSupport','StreamingTV','StreamingMovies','Contract','PaperlessBilling','PaymentMethod','Churn']
+    categorical_columns = ['gender', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines',
+                           'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection',
+                           'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract',
+                           'PaperlessBilling', 'PaymentMethod', 'Churn']
     
     # Check for missing columns and handle them
     missing_cols = [col for col in categorical_columns if col not in df.columns]
@@ -96,13 +99,13 @@ def preprocess_data(df):
         if col in df.columns:
             df[col] = df[col].map({'Yes': 1, 'No': 0})
             mode_value = df[col].mode()[0]
-            df[col] = df[col].fillna (mode_value).astype(int)
+            df[col] = df[col].fillna(mode_value).astype(int)
     
     # Fill missing values in numerical columns with median
     numerical_columns = ['MonthlyCharges', 'TotalCharges', 'AverageMonthlySpend']
     for col in numerical_columns:
         if col in df.columns:
-            df[col].fillna(df[col].median(), inplace=True)
+            df[col] = df[col].fillna(df[col].median())
 
     return df
 
@@ -116,20 +119,80 @@ st.write("Processed DataFrame:", df.head())
 X = df.drop(columns=['Churn'])
 y = df['Churn']
 
+# Encode categorical variables
+categorical_features = X.select_dtypes(include=['category']).columns.tolist()
+numerical_features = X.select_dtypes(exclude=['category']).columns.tolist()
+
+# Create a column transformer for preprocessing ```python
+column_transformer = ColumnTransformer(
+    transformers=[
+        ('num', StandardScaler(), numerical_features),
+        ('cat', OneHotEncoder(), categorical_features)
+    ]
+)
+
+# Create a pipeline that first transforms the data and then fits the model
+pipeline = Pipeline(steps=[
+    ('preprocessor', column_transformer),
+    ('classifier', LogisticRegression())
+])
+
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Scale the features
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-
-# Train a Logistic Regression model
-logistic_model = LogisticRegression()
-logistic_model.fit(X_train_scaled, y_train)
+# Train the model using the pipeline
+pipeline.fit(X_train, y_train)
 
 # Make predictions
-y_pred = logistic_model.predict(X_test_scaled)
+y_pred = pipeline.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+roc_auc = roc_auc_score(y_test, y_pred)
+
+# Display evaluation metrics
+st.write("Model Evaluation Metrics:")
+st.write(f"Accuracy: {accuracy:.2f}")
+st.write(f"Precision: {precision:.2f}")
+st.write(f"Recall: {recall:.2f}")
+st.write(f"F1 Score: {f1:.2f}")
+st.write(f"ROC AUC: {roc_auc:.2f}")
+
+# Display confusion matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+st.write("Confusion Matrix:")
+st.write(conf_matrix)
+
+# Display classification report
+class_report = classification_report(y_test, y_pred)
+st.text("Classification Report:")
+st.text(class_report)
+``` ```python
+# Create a column transformer for preprocessing
+column_transformer = ColumnTransformer(
+    transformers=[
+        ('num', StandardScaler(), numerical_features),
+        ('cat', OneHotEncoder(), categorical_features)
+    ]
+)
+
+# Create a pipeline that first transforms the data and then fits the model
+pipeline = Pipeline(steps=[
+    ('preprocessor', column_transformer),
+    ('classifier', LogisticRegression())
+])
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train the model using the pipeline
+pipeline.fit(X_train, y_train)
+
+# Make predictions
+y_pred = pipeline.predict(X_test)
 
 # Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
