@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 # Load the dataset
-url = "/kaggle/input/telco-customer-churn/WA_Fn-UseC_-Telco-Customer-Churn.csv"
+url = "WA_Fn-UseC_-Telco-Customer-Churn.csv"
 df = pd.read_csv(url)
 
 # Display the first 5 rows of the dataset
