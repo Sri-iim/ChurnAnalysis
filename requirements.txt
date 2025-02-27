@@ -1,8 +1,8 @@
 streamlit
 pandas
 numpy
-seaborn
 matplotlib
-scikit-learn
+seaborn
 plotly
-joblib
+scikit-learn
+shap
