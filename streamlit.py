@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 def load_data():
     url = "WA_Fn-UseC_-Telco-Customer-Churn.csv"  # Replace with your actual path or URL
     df = pd.read_csv(url)
+    df.columns = df.columns.str.strip()  # Remove any leading/trailing spaces from column names
     return df
 
 df = load_data()
@@ -31,10 +32,9 @@ def preprocess_data(df):
     df['tenure'] = df['tenure'].astype(int)
     
     # Define categorical columns
-    categorical_columns = ['gender', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines',
-                           'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection',
-                           'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract',
-                           'PaperlessBilling', 'PaymentMethod', 'Churn']
+    categorical_columns = ['gender','Partner','Dependents','PhoneService','MultipleLines',
+                           'InternetService','OnlineSecurity','OnlineBackup','DeviceProtection',
+                           'TechSupport','StreamingTV','StreamingMovies','Contract','PaperlessBilling','PaymentMethod','Churn']
     
     # Check for missing columns and handle them
     missing_cols = [col for col in categorical_columns if col not in df.columns]
