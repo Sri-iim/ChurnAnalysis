@@ -1,86 +1,120 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import plotly.express as px
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, confusion_matrix
 
-# Load Data
-def load_data():
-    df = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
-    df.dropna(inplace=True)
-    return df
+# Set up Streamlit UI
+st.set_page_config(page_title="📊 Customer Churn Prediction", layout="wide")
 
-df = load_data()
+# Load dataset from local path
+file_path = "WA_Fn-UseC_-Telco-Customer-Churn.csv"  # Update if needed
+df = pd.read_csv(file_path)
 
-# Preprocessing
+# Function to preprocess data
 def preprocess_data(df):
-    label_cols = ["gender", "Partner", "Dependents", "PhoneService", "MultipleLines", "InternetService", "OnlineSecurity", 
-                  "OnlineBackup", "DeviceProtection", "TechSupport", "StreamingTV", "StreamingMovies", "Contract", 
-                  "PaperlessBilling", "PaymentMethod", "Churn"]
-    le = LabelEncoder()
-    for col in label_cols:
-        df[col] = le.fit_transform(df[col])
+    df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
+    df.fillna(0, inplace=True)
+
+    for col in df.select_dtypes(include=["object"]).columns:
+        df[col] = df[col].astype(str).str.strip()
+        if df[col].nunique() < 10:
+            df[col] = df[col].astype("category").cat.codes
+
     return df
 
+# Preprocess dataset
 df = preprocess_data(df)
 
-# Train Model
-def train_model(df):
-    X = df.drop(columns=["customerID", "Churn"])
-    y = df["Churn"]
+# Sidebar Navigation
+st.sidebar.title("📌 Navigation")
+option = st.sidebar.radio("Go to:", ["🏠 Home", "📊 Data Overview", "📈 Visualizations", "🤖 Model & Prediction"])
+
+# Home Page
+if option == "🏠 Home":
+    st.title("📊 Customer Churn Prediction App")
+    st.write("Welcome to the interactive app for analyzing and predicting customer churn.")
+    st.image("https://miro.medium.com/max/1400/1*QXt5jkpXbaXhxeNzWVeF6w.png", use_column_width=True)
+    st.write("🔹 Explore customer data, analyze churn trends, and make predictions.")
+
+# Data Overview Page
+elif option == "📊 Data Overview":
+    st.title("📊 Dataset Overview")
+    st.write("### Sample Data")
+    st.dataframe(df.head())
+
+    st.write("### Data Summary")
+    st.write(df.describe())
+
+    st.write("### Missing Values")
+    missing_values = df.isnull().sum()
+    st.write(missing_values[missing_values > 0])
+
+# Visualizations Page
+elif option == "📈 Visualizations":
+    st.title("📊 Data Visualizations")
+
+    # Churn Distribution
+    st.write("### Churn Distribution")
+    fig, ax = plt.subplots()
+    df["Churn"].value_counts().plot.pie(autopct="%1.1f%%", startangle=90, colors=["green", "red"], ax=ax)
+    st.pyplot(fig)
+
+    # Monthly Charges Distribution
+    st.write("### Monthly Charges Distribution")
+    fig, ax = plt.subplots()
+    sns.histplot(df["MonthlyCharges"], bins=30, kde=True, color="blue", ax=ax)
+    st.pyplot(fig)
+
+    # Correlation Heatmap
+    st.write("### Correlation Heatmap")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.heatmap(df.corr(), annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
+    st.pyplot(fig)
+
+# Model & Prediction Page
+elif option == "🤖 Model & Prediction":
+    st.title("🤖 Train Model & Predict Churn")
+
+    # Train-Test Split
+    X = df.drop(columns=["Churn"], errors="ignore")
+    y = df["Churn"].astype("category").cat.codes
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Train Model
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
     joblib.dump(model, "churn_model.pkl")
-    return model
 
-model = train_model(df)
+    # Model Evaluation
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
 
-# Streamlit App
-st.set_page_config(page_title="Customer Churn Analysis", layout="wide")
-st.title("📊 Customer Churn Analysis Dashboard")
+    st.write(f"✅ **Model Accuracy:** {accuracy:.2%}")
 
-# Sidebar Filters
-st.sidebar.header("🔍 Filter Customers")
-tenure = st.sidebar.slider("Select Tenure", int(df["tenure"].min()), int(df["tenure"].max()))
-monthly_charges = st.sidebar.slider("Select Monthly Charges", float(df["MonthlyCharges"].min()), float(df["MonthlyCharges"].max()))
-filtered_df = df[(df["tenure"] >= tenure) & (df["MonthlyCharges"] >= monthly_charges)]
+    # Confusion Matrix
+    st.write("### Confusion Matrix")
+    fig, ax = plt.subplots()
+    sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt="d", cmap="Blues", ax=ax)
+    st.pyplot(fig)
 
-# Visualization: Customer Demographics
-st.subheader("📌 Customer Demographics")
-fig = px.histogram(df, x="gender", color="Churn", barmode="group")
-st.plotly_chart(fig)
+    # User Input for Prediction
+    st.subheader("🔍 Predict Customer Churn")
+    user_input = {}
+    for col in X.columns:
+        user_input[col] = st.number_input(f"{col}", value=float(X[col].median()))
 
-# Visualization: Service Usage
-st.subheader("📡 Service Usage Patterns")
-fig = px.histogram(df, x="InternetService", color="Churn", barmode="group")
-st.plotly_chart(fig)
+    # Convert input to DataFrame
+    user_df = pd.DataFrame([user_input])
 
-# Churn Prediction
-st.subheader("🔮 Churn Prediction")
-input_data = {col: st.sidebar.number_input(col, value=float(df[col].mean())) for col in df.columns if col not in ["customerID", "Churn"]}
-input_df = pd.DataFrame([input_data])
+    # Make prediction
+    if st.button("Predict"):
+        prediction = model.predict(user_df)[0]
+        result = "Churn" if prediction == 1 else "No Churn"
+        st.success(f"**Prediction: {result}**")
 
-if st.button("Predict Churn"):
-    model = joblib.load("churn_model.pkl")
-    prediction = model.predict(input_df)
-    churn_probability = model.predict_proba(input_df)[0][1]
-    st.metric(label="Churn Probability", value=f"{churn_probability*100:.2f}%")
-
-# Additional Insights
-st.subheader("📈 Additional Insights")
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Churn by Contract Type")
-    fig = px.pie(df, names="Contract", values="Churn", title="Churn Distribution by Contract Type")
-    st.plotly_chart(fig)
-with col2:
-    st.subheader("Monthly Charges vs Churn")
-    fig = px.scatter(df, x="MonthlyCharges", y="Churn", color="Churn", title="Monthly Charges Impact on Churn")
-    st.plotly_chart(fig)
-
-st.dataframe(filtered_df)
+st.sidebar.write("📌 Made with ❤️ by [Your Name]")
