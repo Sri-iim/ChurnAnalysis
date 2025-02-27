@@ -19,7 +19,9 @@ df = load_data()
 
 # Data Preprocessing and Feature Engineering
 def preprocess_data(df):
-    df.drop(columns=['customerID'], inplace=True)
+    if 'customerID' in df.columns:
+        df.drop(columns=['customerID'], inplace=True)
+    
     df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
     df['tenure'] = df['tenure'].astype(int)
     categorical_columns = ['gender', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines',
