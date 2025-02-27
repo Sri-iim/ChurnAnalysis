@@ -179,6 +179,12 @@ input_data['AverageMonthlySpend'] = input_data['TotalCharges'] / input_data['ten
 # Preprocess input data
 input_data = preprocess_data(input_data)
 
+
+log_reg = LogisticRegression(random_state=42)
+rf = RandomForestClassifier(random_state=42)
+
+log_reg.fit(X_train, y_train)
+rf.fit(X_train, y_train)
 # Model Prediction
 if st.button("Predict Churn"):
     prediction_log_reg = log_reg.predict(input_data)
