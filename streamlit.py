@@ -174,7 +174,7 @@ X_encoded = pd.get_dummies(X, drop_first=True)
 X_train, X_test, y_train, y_test = train_test_split(X_encoded, y, test_size=0.2, random_state=42)
 scaler = StandardScaler()
 numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges', 'AverageMonthlySpend', 'TotalServices']
-X_train[numerical _columns] = scaler.fit_transform(X_train[numerical_columns])
+X_train[numerical_columns] = scaler.fit_transform(X_train[numerical_columns])
 X_test[numerical_columns] = scaler.transform(X_test[numerical_columns])
 
 def evaluate_model(model, X_train, X_test, y_train, y_test, model_name):
