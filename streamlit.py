@@ -24,11 +24,11 @@ def load_data():
         
         # Data preprocessing
         # Convert TotalCharges to numeric
-        df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
+         df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
         # Fill missing values
-        df['TotalCharges'].fillna(0, inplace=True)
+         df['TotalCharges'].fillna(0, inplace=True)
         # Convert SeniorCitizen from 0/1 to No/Yes
-        df['SeniorCitizen'] = df['SeniorCitizen'].map({0: 'No', 1: 'Yes'})
+         df['SeniorCitizen'] = df['SeniorCitizen'].map({0: 'No', 1: 'Yes'})
         
         return df
     except Exception as e:
