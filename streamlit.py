@@ -211,22 +211,53 @@ rf.fit(X_train, y_train)
 
 def evaluate_model(model, X_train, X_test, y_train, y_test, model_name):
     y_pred = model.predict(X_test)
+    
+    # Compute evaluation metrics
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
     roc_auc = roc_auc_score(y_test, y_pred)
-    st.write(f"Model: {model_name}")
-    st.write(f"Accuracy: {accuracy:.4f}")
-    st.write(f"Precision: {precision:.4f}")
-    st.write(f"Recall: {recall:.4f}")
-    st.write(f"F1-Score: {f1:.4f}")
-    st.write(f"ROC-AUC: {roc_auc:.4f}")
-    st.write("Confusion Matrix:")
-    st.write(confusion_matrix(y_test, y_pred))
-    st.write("Classification Report:")
-    st.write(classification_report(y_test, y_pred))
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    class_report = classification_report(y_test, y_pred, output_dict=True)
+    
+    # Display metrics
+    st.subheader(f"Model: {model_name}")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Accuracy", f"{accuracy:.4f}")
+    col2.metric("Precision", f"{precision:.4f}")
+    col3.metric("Recall", f"{recall:.4f}")
 
+    col4, col5 = st.columns(2)
+    col4.metric("F1-Score", f"{f1:.4f}")
+    col5.metric("ROC-AUC", f"{roc_auc:.4f}")
+
+    # Confusion matrix heatmap
+    st.subheader("Confusion Matrix")
+    fig, ax = plt.subplots(figsize=(5, 4))
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['Negative', 'Positive'], yticklabels=['Negative', 'Positive'])
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
+    st.pyplot(fig)
+
+    # Classification Report as DataFrame
+    st.subheader("Classification Report")
+    report_df = pd.DataFrame(class_report).transpose()
+    st.dataframe(report_df.style.format("{:.4f}"))
+
+    # Bar chart of metrics
+    st.subheader("Performance Comparison")
+    metrics_df = pd.DataFrame({
+        "Metric": ["Accuracy", "Precision", "Recall", "F1-Score", "ROC-AUC"],
+        "Score": [accuracy, precision, recall, f1, roc_auc]
+    })
+    
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.barplot(x="Metric", y="Score", data=metrics_df, palette="coolwarm")
+    plt.ylim(0, 1)
+    st.pyplot(fig)
+
+# Evaluate models
 evaluate_model(log_reg, X_train, X_test, y_train, y_test, "Logistic Regression")
 evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
 
