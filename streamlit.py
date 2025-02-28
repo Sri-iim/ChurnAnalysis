@@ -116,25 +116,74 @@ rf = RandomForestClassifier(random_state=42)
 log_reg.fit(X_train, y_train)
 rf.fit(X_train, y_train)
 
-# Model Evaluation
+
+
+# Improved Model Evaluation with Visuals
 def evaluate_model(model, X_test, y_test, model_name):
     y_pred = model.predict(X_test)
+    
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
     roc_auc = roc_auc_score(y_test, y_pred)
+    
+    # Display Results in a More Visual Manner
+    st.subheader(f"🔍 {model_name} Performance")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("📌 Accuracy", f"{accuracy:.4f}")
+        st.progress(float(accuracy))
+        
+    with col2:
+        st.metric("🎯 Precision", f"{precision:.4f}")
+        st.progress(float(precision))
+        
+    with col3:
+        st.metric("📢 Recall", f"{recall:.4f}")
+        st.progress(float(recall))
+        
+    with col4:
+        st.metric("⚡ F1 Score", f"{f1:.4f}")
+        st.progress(float(f1))
+    
+    # Confusion Matrix Heatmap
+    st.subheader(f"📊 Confusion Matrix - {model_name}")
+    fig, ax = plt.subplots(figsize=(5, 4))
+    cm = confusion_matrix(y_test, y_pred)
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=["No Churn", "Churn"], yticklabels=["No Churn", "Churn"], ax=ax)
+    st.pyplot(fig)
+    
+    # Classification Report Summary
+    st.text("📄 Classification Report")
+    st.text(classification_report(y_test, y_pred))
 
-    st.write(f"### {model_name} Performance")
-    st.metric("Accuracy", f"{accuracy:.4f}")
-    st.metric("Precision", f"{precision:.4f}")
-    st.metric("Recall", f"{recall:.4f}")
-    st.metric("F1 Score", f"{f1:.4f}")
-    st.metric("ROC AUC", f"{roc_auc:.4f}")
-
-st.subheader("📊 Model Performance")
+# Display evaluation for both models
+st.subheader("📊 Model Performance Summary")
 evaluate_model(log_reg, X_test, y_test, "Logistic Regression")
 evaluate_model(rf, X_test, y_test, "Random Forest")
+
+# # Model Evaluation
+# def evaluate_model(model, X_test, y_test, model_name):
+#     y_pred = model.predict(X_test)
+#     accuracy = accuracy_score(y_test, y_pred)
+#     precision = precision_score(y_test, y_pred)
+#     recall = recall_score(y_test, y_pred)
+#     f1 = f1_score(y_test, y_pred)
+#     roc_auc = roc_auc_score(y_test, y_pred)
+
+#     st.write(f"### {model_name} Performance")
+#     st.metric("Accuracy", f"{accuracy:.4f}")
+#     st.metric("Precision", f"{precision:.4f}")
+#     st.metric("Recall", f"{recall:.4f}")
+#     st.metric("F1 Score", f"{f1:.4f}")
+#     st.metric("ROC AUC", f"{roc_auc:.4f}")
+
+# st.subheader("📊 Model Performance")
+# evaluate_model(log_reg, X_test, y_test, "Logistic Regression")
+# evaluate_model(rf, X_test, y_test, "Random Forest")
 
 # Prediction on Sample Data
 st.subheader("🎯 Churn Prediction")
