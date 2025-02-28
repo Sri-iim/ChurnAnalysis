@@ -85,8 +85,6 @@ st.set_page_config(page_title="Telco Customer Churn Prediction", layout="wide")
 st.title("🌍 Telecom Customer Churn Prediction")
 
 # Display an image
-image = Image.open("telecom.jpg")
-image = image.resize((200, 300))
 st.image(image)
 
 
