@@ -107,6 +107,17 @@ if st.checkbox("Show Raw Data"):
 # Interactive Filters
 st.sidebar.header("Filter Options")
 
+# Button to clear filters
+if st.sidebar.button("Clear Filters"):
+    st.session_state['gender_filter'] = 'All'
+    st.session_state['partner_filter'] = 'All'
+    st.session_state['dependents_filter'] = 'All'
+    st.session_state['tenure_filter'] = 'All'
+    st.session_state['internet_service_filter'] = 'All'
+    st.session_state['contract_filter'] = 'All'
+    st.session_state['churn_filter'] = 'All'
+
+
 # Gender Filter
 gender_filter = st.sidebar.selectbox("Select Gender", options=['All'] + df['gender'].unique().tolist())
 if gender_filter != 'All':
