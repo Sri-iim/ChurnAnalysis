@@ -85,15 +85,59 @@ st.subheader("Data Exploration")
 if st.checkbox("Show Raw Data"):
     st.write(df)
 
+# # Interactive Filters
+# st.sidebar.header("Filter Options")
+# gender_filter = st.sidebar.selectbox("Select Gender", options=['All'] + df['gender'].unique().tolist())
+# if gender_filter != 'All':
+#     df = df[df['gender'] == gender_filter]
+
+# partner_filter = st.sidebar.selectbox("Select Partner Status", options=['All'] + df['Partner'].unique().tolist())
+# if partner_filter != 'All':
+#     df = df[df['Partner'] == partner_filter]
+
 # Interactive Filters
 st.sidebar.header("Filter Options")
+
+# Gender Filter
 gender_filter = st.sidebar.selectbox("Select Gender", options=['All'] + df['gender'].unique().tolist())
 if gender_filter != 'All':
     df = df[df['gender'] == gender_filter]
 
+# Partner Filter
 partner_filter = st.sidebar.selectbox("Select Partner Status", options=['All'] + df['Partner'].unique().tolist())
 if partner_filter != 'All':
     df = df[df['Partner'] == partner_filter]
+
+# Dependents Filter
+dependents_filter = st.sidebar.selectbox("Select Dependents Status", options=['All'] + df['Dependents'].unique().tolist())
+if dependents_filter != 'All':
+    df = df[df['Dependents'] == dependents_filter]
+
+# Tenure Category Filter
+tenure_filter = st.sidebar.selectbox("Select Tenure Category", options=['All'] + df['TenureCategory'].unique().tolist())
+if tenure_filter != 'All':
+    df = df[df['TenureCategory'] == tenure_filter]
+
+# Internet Service Filter
+internet_service_filter = st.sidebar.selectbox("Select Internet Service Type", options=['All'] + df['InternetService'].unique().tolist())
+if internet_service_filter != 'All':
+    df = df[df['InternetService'] == internet_service_filter]
+
+# Contract Type Filter
+contract_filter = st.sidebar.selectbox("Select Contract Type", options=['All'] + df['Contract'].unique().tolist())
+if contract_filter != 'All':
+    df = df[df['Contract'] == contract_filter]
+
+# Churn Filter
+churn_filter = st.sidebar.selectbox("Select Churn Status", options=['All'] + df['Churn'].unique().tolist())
+if churn_filter != 'All':
+    df = df[df['Churn'] == churn_filter]
+
+# Display Filtered Data (Optional)
+st.subheader("Filtered Data Preview")
+st.write(df.head())
+
+
 
 # Visualizations
 st.subheader("Visualizations")
