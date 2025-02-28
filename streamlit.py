@@ -327,44 +327,17 @@ evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
 #     st.write(f"Logistic Regression Prediction: {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
 #     st.write(f"Random Forest Prediction: {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
 
-import streamlit as st
-
 st.subheader("Churn Prediction")
 
-# Custom CSS to style the button
-button_style = """
-    <style>
-        .big-button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            font-size: 20px;
-            text-align: center;
-            background-color: #FF4B4B;
-            color: white;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .big-button:hover {
-            background-color: #D43F3F;
-        }
-    </style>
-"""
+# Create a bigger button
+predict = st.button("🚀 Predict Churn", use_container_width=True)
 
-st.markdown(button_style, unsafe_allow_html=True)
-
-# Button as HTML with JavaScript
-predict = st.markdown('<button class="big-button">Predict Churn</button>', unsafe_allow_html=True)
-
-if st.button("Hidden Button", key="hidden", help="Hidden button trigger"):
+if predict:
     prediction_log_reg = log_reg.predict(X_test.iloc[:1])
     prediction_rf = rf.predict(X_test.iloc[:1])
 
     st.write(f"**Logistic Regression Prediction:** {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
     st.write(f"**Random Forest Prediction:** {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
-
 
 # Additional Feature - Customer Profile Summary
 st.subheader("Customer Profile Summary")
