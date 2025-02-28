@@ -77,8 +77,17 @@ def preprocess_data(df):
 
 df = preprocess_data(df.copy())
 
-# Streamlit App
-st.title("Telco Customer Churn Prediction")
+
+# Set page title
+st.set_page_config(page_title="Telco Customer Churn Prediction", layout="wide")
+
+# Title
+st.title("🌍 Telecom Customer Churn Prediction")
+
+# Display an image
+st.image("telecom.jpg")
+
+
 
 # Data Exploration
 st.subheader("Data Exploration")
