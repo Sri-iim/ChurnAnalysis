@@ -249,24 +249,24 @@ if st.button("Predict Churn"):
 # rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
 
 # Customer Profile Analysis
-st.subheader("Customer Profile Analysis")
-st.write("Analyze customer profiles based on selected filters and visualizations.")
-# Add more interactive visualizations or insights based on customer profiles here
+# st.subheader("Customer Profile Analysis")
+# st.write("Analyze customer profiles based on selected filters and visualizations.")
+# # Add more interactive visualizations or insights based on customer profiles here
 
-# Service Usage Trends
-st.subheader("Service Usage Trends")
-# Implement visualizations to show trends in service usage over time or by customer demographics
+# # Service Usage Trends
+# st.subheader("Service Usage Trends")
+# # Implement visualizations to show trends in service usage over time or by customer demographics
 
-# Churn Risk Assessment
-st.subheader("Churn Risk Assessment")
-# Provide insights or visualizations that help assess the risk of churn based on various factors
+# # Churn Risk Assessment
+# st.subheader("Churn Risk Assessment")
+# # Provide insights or visualizations that help assess the risk of churn based on various factors
 
-# Interactive Data Filtering and Exploration
-st.subheader("Interactive Data Filtering")
-# Allow users to filter data based on various criteria and visualize the results dynamically
+# # Interactive Data Filtering and Exploration
+# st.subheader("Interactive Data Filtering")
+# # Allow users to filter data based on various criteria and visualize the results dynamically
 
-st.sidebar.header("Additional Filters")
-# Add more filter options for users to explore the dataset further
+# st.sidebar.header("Additional Filters")
+# # Add more filter options for users to explore the dataset further
 
-# Finalize the Streamlit app
-st.write("Explore the data, visualize trends, and predict churn risk effectively!")
+# # Finalize the Streamlit app
+# st.write("Explore the data, visualize trends, and predict churn risk effectively!")
