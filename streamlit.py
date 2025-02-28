@@ -80,7 +80,7 @@ df = preprocess_data(df.copy())
 # Streamlit App
 st.title("Telco Customer Churn Prediction")
 
-# Data Exploration
+# # Data Exploration
 st.subheader("Data Exploration")
 if st.checkbox("Show Raw Data"):
     st.write(df)
@@ -95,13 +95,24 @@ partner_filter = st.sidebar.selectbox("Select Partner Status", options=['All'] +
 if partner_filter != 'All':
     df = df[df['Partner'] == partner_filter]
 
+# Additional Filters
+tenure_filter = st.sidebar.slider("Select Tenure (months)", 0, 72, (0, 72))
+df = df[(df['tenure'] >= tenure_filter[0]) & (df['tenure'] <= tenure_filter[1])]
+
+monthly_charges_filter = st.sidebar.slider("Select Monthly Charges", 0.0, 100.0, (0.0, 100.0))
+df = df[(df['MonthlyCharges'] >= monthly_charges_filter[0]) & (df['MonthlyCharges'] <= monthly_charges_filter[1])]
+
+internet_service_filter = st.sidebar.selectbox("Select Internet Service Type", options=['All'] + df['InternetService'].unique().tolist())
+if internet_service_filter != 'All':
+    df = df[df['InternetService'] == internet_service_filter]
+
 # Visualizations
 st.subheader("Visualizations")
 
 # Churn Distribution
 st.subheader("Churn Distribution")
 fig1, ax1 = plt.subplots()
-sns.countplot(x='Churn', data=df, ax=ax1)
+sns.countplot(x='Churn', data=df, ax=ax1, palette='Set2')
 for p in ax1.patches:
     ax1.annotate(f'{int(p.get_height())}', (p.get_x() + p.get_width() / 2., p.get_height()),
                  ha='center', va='center', fontsize=10, color='black', xytext=(0, 5),
@@ -111,7 +122,7 @@ st.pyplot(fig1)
 # Churn by Tenure Category
 st.subheader("Churn by Tenure Category")
 fig2, ax2 = plt.subplots(figsize=(10, 6))
-sns.countplot(x='TenureCategory', hue='Churn', data=df, ax=ax2)
+sns.countplot(x='TenureCategory', hue='Churn', data=df, ax=ax2, palette='Set1')
 for p in ax2.patches:
     ax2.annotate(f'{int(p.get_height())}', (p.get_x() + p.get_width() / 2., p.get_height()),
                  ha='center', va='center', fontsize=10, color='black', xytext=(0, 5),
@@ -121,7 +132,7 @@ st.pyplot(fig2)
 # Churn by Total Services
 st.subheader("Churn by Total Services")
 fig3, ax3 = plt.subplots()
-sns.boxplot(x='Churn', y='TotalServices', data=df, ax=ax3)
+sns.boxplot(x='Churn', y='TotalServices', data=df, ax=ax3, palette='Set3')
 st.pyplot(fig3)
 
 # Correlation Heatmap
@@ -179,18 +190,8 @@ input_data['AverageMonthlySpend'] = input_data['TotalCharges'] / input_data['ten
 # Preprocess input data
 input_data = preprocess_data(input_data)
 
-
 log_reg = LogisticRegression(random_state=42)
 rf = RandomForestClassifier(random_state=42)
-
-# log_reg.fit(X_train, y_train)
-# rf.fit(X_train, y_train)
-# Model Prediction
-# if st.button("Predict Churn"):
-#     prediction_log_reg = log_reg.predict(input_data)
-#     prediction_rf = rf.predict(input_data)
-#     st.write(f"Logistic Regression Prediction: {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
-#     st.write(f"Random Forest Prediction: {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
 
 # Model Training and Evaluation
 st.subheader("Model Training and Evaluation")
@@ -204,8 +205,6 @@ numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges', 'AverageMonthly
 X_train[numerical_columns] = scaler.fit_transform(X_train[numerical_columns])
 X_test[numerical_columns] = scaler.transform(X_test[numerical_columns])
 
-log_reg = LogisticRegression(random_state=42)
-rf = RandomForestClassifier(random_state=42)
 log_reg.fit(X_train, y_train)
 rf.fit(X_train, y_train)
 
@@ -216,12 +215,23 @@ def evaluate_model(model, X_train, X_test, y_train, y_test, model_name):
     recall = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
     roc_auc = roc_auc_score(y_test, y_pred)
+
+    # Visualization of model evaluation metrics
+    metrics = {
+        'Accuracy': accuracy,
+        'Precision': precision,
+        'Recall': recall,
+        'F1-Score': f1,
+        'ROC-AUC': roc_auc
+    }
+    
+    fig, ax = plt.subplots()
+    sns.barplot(x=list(metrics.keys()), y=list(metrics.values()), palette='viridis', ax=ax)
+    ax.set_title(f"{model_name} Evaluation Metrics")
+    ax.set_ylim(0, 1)
+    st.pyplot(fig)
+
     st.write(f"Model: {model_name}")
-    st.write(f"Accuracy: {accuracy:.4f}")
-    st.write(f"Precision: {precision:.4f}")
-    st.write(f"Recall: {recall:.4f}")
-    st.write(f"F1-Score: {f1:.4f}")
-    st.write(f"ROC-AUC: {roc_auc:.4f}")
     st.write("Confusion Matrix:")
     st.write(confusion_matrix(y_test, y_pred))
     st.write("Classification Report:")
@@ -233,8 +243,8 @@ evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
 # Churn Prediction
 st.subheader("Churn Prediction")
 if st.button("Predict Churn"):
-    prediction_log_reg = log_reg.predict(X_test.iloc[:1])
-    prediction_rf = rf.predict(X_test.iloc[:1])
+    prediction_log_reg = log_reg.predict(input_data)
+    prediction_rf = rf.predict(input_data)
     st.write(f"Logistic Regression Prediction: {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
     st.write(f"Random Forest Prediction: {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
 
@@ -245,7 +255,7 @@ st.write(df.describe(include='all'))
 # Additional Feature - Service Usage Trend Analysis
 st.subheader("Service Usage Trend Analysis")
 fig5, ax5 = plt.subplots()
-sns.histplot(df['TotalServices'], kde=True, bins=10, ax=ax5)
+sns.histplot(df['TotalServices'], kde=True, bins=10, ax=ax5, color='skyblue')
 st.pyplot(fig5)
 
 # Additional Feature - Churn Risk Assessment Indicator
@@ -261,34 +271,5 @@ df['ChurnRisk'] = df.apply(churn_risk, axis=1)
 st.subheader("Churn Risk Assessment")
 st.write(df[['ChurnRisk', 'Churn']].value_counts())
 
-# log_reg = LogisticRegression(random_state=42)
-# rf = RandomForestClassifier(random_state=42)
-
-# st.subheader("Logistic Regression Evaluation")
-# log_reg_model = evaluate_model(log_reg, X_train, X_test, y_train, y_test, "Logistic Regression")
-
-# st.subheader("Random Forest Evaluation")
-# rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
-
-# Customer Profile Analysis
-# st.subheader("Customer Profile Analysis")
-# st.write("Analyze customer profiles based on selected filters and visualizations.")
-# # Add more interactive visualizations or insights based on customer profiles here
-
-# # Service Usage Trends
-# st.subheader("Service Usage Trends")
-# # Implement visualizations to show trends in service usage over time or by customer demographics
-
-# # Churn Risk Assessment
-# st.subheader("Churn Risk Assessment")
-# # Provide insights or visualizations that help assess the risk of churn based on various factors
-
-# # Interactive Data Filtering and Exploration
-# st.subheader("Interactive Data Filtering")
-# # Allow users to filter data based on various criteria and visualize the results dynamically
-
-# st.sidebar.header("Additional Filters")
-# # Add more filter options for users to explore the dataset further
-
-# # Finalize the Streamlit app
-# st.write("Explore the data, visualize trends, and predict churn risk effectively!")
+# Finalize the Streamlit app
+st.write("Explore the data, visualize trends, and predict churn risk effectively!")
