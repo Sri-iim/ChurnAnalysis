@@ -144,14 +144,6 @@ churn_filter = st.sidebar.selectbox("Select Churn Status", options=['All'] + df[
 if churn_filter != 'All':
     df = df[df['Churn'] == churn_filter]
 
-if st.sidebar.button("Clear Filters"):
-    st.session_state['gender_filter'] = 'All'
-    st.session_state['partner_filter'] = 'All'
-    st.session_state['dependents_filter'] = 'All'
-    st.session_state['tenure_filter'] = 'All'
-    st.session_state['internet_service_filter'] = 'All'
-    st.session_state['contract_filter'] = 'All'
-    st.session_state['churn_filter'] = 'All'
 
 
 
