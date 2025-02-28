@@ -108,15 +108,6 @@ if st.checkbox("Show Raw Data"):
 st.sidebar.header("Filter Options")
 
 # Button to clear filters
-if st.sidebar.button("Clear Filters"):
-    st.session_state['gender_filter'] = 'All'
-    st.session_state['partner_filter'] = 'All'
-    st.session_state['dependents_filter'] = 'All'
-    st.session_state['tenure_filter'] = 'All'
-    st.session_state['internet_service_filter'] = 'All'
-    st.session_state['contract_filter'] = 'All'
-    st.session_state['churn_filter'] = 'All'
-
 
 # Gender Filter
 gender_filter = st.sidebar.selectbox("Select Gender", options=['All'] + df['gender'].unique().tolist())
@@ -152,6 +143,17 @@ if contract_filter != 'All':
 churn_filter = st.sidebar.selectbox("Select Churn Status", options=['All'] + df['Churn'].unique().tolist())
 if churn_filter != 'All':
     df = df[df['Churn'] == churn_filter]
+
+if st.sidebar.button("Clear Filters"):
+    st.session_state['gender_filter'] = 'All'
+    st.session_state['partner_filter'] = 'All'
+    st.session_state['dependents_filter'] = 'All'
+    st.session_state['tenure_filter'] = 'All'
+    st.session_state['internet_service_filter'] = 'All'
+    st.session_state['contract_filter'] = 'All'
+    st.session_state['churn_filter'] = 'All'
+
+
 
 # Display Filtered Data (Optional)
 st.subheader("Filtered Data Preview")
