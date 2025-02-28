@@ -204,8 +204,12 @@ numerical_columns = ['tenure', 'MonthlyCharges', 'TotalCharges', 'AverageMonthly
 X_train[numerical_columns] = scaler.fit_transform(X_train[numerical_columns])
 X_test[numerical_columns] = scaler.transform(X_test[numerical_columns])
 
+log_reg = LogisticRegression(random_state=42)
+rf = RandomForestClassifier(random_state=42)
+log_reg.fit(X_train, y_train)
+rf.fit(X_train, y_train)
+
 def evaluate_model(model, X_train, X_test, y_train, y_test, model_name):
-    model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
@@ -222,16 +226,27 @@ def evaluate_model(model, X_train, X_test, y_train, y_test, model_name):
     st.write(confusion_matrix(y_test, y_pred))
     st.write("Classification Report:")
     st.write(classification_report(y_test, y_pred))
-    return model
 
-log_reg = LogisticRegression(random_state=42)
-rf = RandomForestClassifier(random_state=42)
+evaluate_model(log_reg, X_train, X_test, y_train, y_test, "Logistic Regression")
+evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
 
-st.subheader("Logistic Regression Evaluation")
-log_reg_model = evaluate_model(log_reg, X_train, X_test, y_train, y_test, "Logistic Regression")
+# Churn Prediction
+st.subheader("Churn Prediction")
+if st.button("Predict Churn"):
+    prediction_log_reg = log_reg.predict(X_test.iloc[:1])
+    prediction_rf = rf.predict(X_test.iloc[:1])
+    st.write(f"Logistic Regression Prediction: {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
+    st.write(f"Random Forest Prediction: {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
 
-st.subheader("Random Forest Evaluation")
-rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
+
+# log_reg = LogisticRegression(random_state=42)
+# rf = RandomForestClassifier(random_state=42)
+
+# st.subheader("Logistic Regression Evaluation")
+# log_reg_model = evaluate_model(log_reg, X_train, X_test, y_train, y_test, "Logistic Regression")
+
+# st.subheader("Random Forest Evaluation")
+# rf_model = evaluate_model(rf, X_train, X_test, y_train, y_test, "Random Forest")
 
 # Customer Profile Analysis
 st.subheader("Customer Profile Analysis")
