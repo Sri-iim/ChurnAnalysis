@@ -186,11 +186,11 @@ rf = RandomForestClassifier(random_state=42)
 # log_reg.fit(X_train, y_train)
 # rf.fit(X_train, y_train)
 # Model Prediction
-if st.button("Predict Churn"):
-    prediction_log_reg = log_reg.predict(input_data)
-    prediction_rf = rf.predict(input_data)
-    st.write(f"Logistic Regression Prediction: {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
-    st.write(f"Random Forest Prediction: {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
+# if st.button("Predict Churn"):
+#     prediction_log_reg = log_reg.predict(input_data)
+#     prediction_rf = rf.predict(input_data)
+#     st.write(f"Logistic Regression Prediction: {'Churn' if prediction_log_reg[0] == 1 else 'No Churn'}")
+#     st.write(f"Random Forest Prediction: {'Churn' if prediction_rf[0] == 1 else 'No Churn'}")
 
 # Model Training and Evaluation
 st.subheader("Model Training and Evaluation")
